@@ -102,7 +102,7 @@ class App {
 
     datePicker.addEventListener('change', this._pickerChangeDate.bind(this));
     datePicker.disabled = true;
-    //datePicker.value = new Date().toLocaleDateString();
+
     datePicker.value = new Date().toISOString().split('T')[0];
   }
 
@@ -145,10 +145,7 @@ class App {
 
   _loadMap(position) {
     const { latitude, longitude } = position.coords;
-    // const { longitude } = position.coords;
-    //   console.log(`http://google.pt/maps/@${latitude},${longitude}`);
 
-    //   const map = L.map('map').setView([51.505, -0.09], 13);
     const coords = [latitude, longitude];
     this.#map = L.map('map').setView(coords, this.#mapZoomLevel);
 
@@ -160,18 +157,9 @@ class App {
     this.#map.on('click', this._showForm.bind(this));
 
     const currDate = new Date(datePicker.value).toISOString().split('T')[0];
-    const newArr = this.#workouts.filter(workout => {
-      return workout.date.toISOString().split('T')[0] === currDate;
-    });
 
-    newArr.forEach(work => {
-      this._renderWorkoutMarker(work);
-    });
-
+    this._pickerChangeDate();
     datePicker.disabled = false;
-    // this.#workouts.forEach(work => {
-    //   this._renderWorkoutMarker(work);
-    // });
   }
 
   _showForm(mapE) {
@@ -397,15 +385,6 @@ class App {
     inputElevation.value = `${workout.elevation}`;
     inputCadence.value = `${workout.cadence}`;
     this._showForm();
-    //this._newWorkout();
-
-    // form
-    // const element = document.querySelector(`[data-id='${workout.id}']`);
-    // element.parentNode.removeChild(element);
-    // element.remove();
-
-    //uncomment this to give full functionality
-    //this._setLocalStorage();
   }
 
   _removeWorkout(e) {
@@ -419,9 +398,6 @@ class App {
     const element = document.querySelector(`[data-id='${workout.id}']`);
     // element.parentNode.removeChild(element);
     element.remove();
-
-    //uncomment this to give full functionality
-    //this._setLocalStorage();
   }
 
   _setLocalStorage() {
@@ -449,7 +425,7 @@ class App {
         // console.log(workout.date);
         workout.id = obj.id;
         this.#workouts.push(workout);
-        this._renderWorkout(workout);
+        // this._renderWorkout(workout);
       }
 
       if (obj.type === 'cycling') {
@@ -464,15 +440,9 @@ class App {
         // console.log(workout.date);
         workout.id = obj.id;
         this.#workouts.push(workout);
-        this._renderWorkout(workout);
+        // this._renderWorkout(workout);
       }
     });
-
-    // console.log(data);
-    // this.#workouts = data;
-    // this.#workouts.forEach(work => {
-    //   this._renderWorkout(work);
-    // });
   }
 
   reset() {

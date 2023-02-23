@@ -49,7 +49,11 @@ a:visited {
   flex-direction: column;
 }
 
-
+.header{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .logo {
   height: 5.2rem;
   align-self: center;
