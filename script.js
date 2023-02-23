@@ -7,6 +7,7 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const datePicker = document.querySelector('#picker');
 
 class Workout {
   // date = new Date();
@@ -14,7 +15,7 @@ class Workout {
   id = this._guid();
   clicks = 0;
 
-  constructor(coords, distance, duration, date = new Date()) {
+  constructor(coords, distance, duration, date) {
     this.coords = coords;
     this.distance = distance;
     this.duration = duration;
@@ -48,8 +49,9 @@ class Workout {
 
 class Running extends Workout {
   type = 'running';
-  constructor(coords, distance, duration, cadence, date = new Date()) {
+  constructor(coords, distance, duration, cadence, date) {
     super(coords, distance, duration, date);
+
     this.cadence = cadence;
     this.calcPace();
 
@@ -64,7 +66,7 @@ class Running extends Workout {
 
 class Cycling extends Workout {
   type = 'cycling';
-  constructor(coords, distance, duration, elevation, date = new Date()) {
+  constructor(coords, distance, duration, elevation, date) {
     super(coords, distance, duration, date);
     this.elevation = elevation;
     this.calcSpeed();
@@ -96,6 +98,9 @@ class App {
     inputType.addEventListener('change', this._toggleElevationField);
 
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+
+    //datePicker.value = new Date().toLocaleDateString();
+    datePicker.value = new Date().toISOString().split('T')[0];
   }
 
   _getPosition() {
@@ -110,8 +115,8 @@ class App {
   }
 
   _loadMap(position) {
-    const { latitude } = position.coords;
-    const { longitude } = position.coords;
+    const { latitude, longitude } = position.coords;
+    // const { longitude } = position.coords;
     //   console.log(`http://google.pt/maps/@${latitude},${longitude}`);
 
     //   const map = L.map('map').setView([51.505, -0.09], 13);
@@ -123,11 +128,19 @@ class App {
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.#map);
 
+    const currDate = new Date(datePicker.value).toISOString().split('T')[0];
     this.#map.on('click', this._showForm.bind(this));
 
-    this.#workouts.forEach(work => {
+    const newArr = this.#workouts.filter(workout => {
+      return workout.date.toISOString().split('T')[0] === currDate;
+    });
+
+    newArr.forEach(work => {
       this._renderWorkoutMarker(work);
     });
+    // this.#workouts.forEach(work => {
+    //   this._renderWorkoutMarker(work);
+    // });
   }
 
   _showForm(mapE) {
@@ -182,7 +195,13 @@ class App {
         return alert('Running Inputs have to be a positive number');
       }
 
-      workout = new Running([lat, lng], distance, duration, cadence);
+      workout = new Running(
+        [lat, lng],
+        distance,
+        duration,
+        cadence,
+        new Date(datePicker.value)
+      );
     }
 
     if (type === 'cycling') {
@@ -193,7 +212,13 @@ class App {
       )
         return alert('Cycling Inputs have to be a positive number');
 
-      workout = new Cycling([lat, lng], distance, duration, elevation);
+      workout = new Cycling(
+        [lat, lng],
+        distance,
+        duration,
+        elevation,
+        new Date(datePicker.value)
+      );
     }
 
     this.#workouts.push(workout);

@@ -49,10 +49,18 @@ a:visited {
   flex-direction: column;
 }
 
+
 .logo {
   height: 5.2rem;
   align-self: center;
-  margin-bottom: 4rem;
+  margin-bottom: 1rem;
+}
+
+#picker {
+  height: 4rem;
+  width: 50%;
+  align-self: center;
+  margin-bottom: 1rem;
 }
 
 .workouts {
