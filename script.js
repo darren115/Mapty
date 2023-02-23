@@ -85,6 +85,7 @@ class App {
   #mapEvent;
   #workouts = [];
   #markers = [];
+  #currentDate = new Date().toISOString().split('T')[0];
 
   #mapZoomLevel = 13;
 
@@ -99,8 +100,36 @@ class App {
 
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
 
+    datePicker.addEventListener('change', this._pickerChangeDate.bind(this));
+    datePicker.disabled = true;
     //datePicker.value = new Date().toLocaleDateString();
     datePicker.value = new Date().toISOString().split('T')[0];
+  }
+
+  _pickerChangeDate() {
+    const currWorkouts = this.#workouts.filter(workout => {
+      return this.#currentDate === workout.date.toISOString().split('T')[0];
+    });
+
+    currWorkouts.forEach(workout => {
+      this._clearMarker(workout.id);
+    });
+
+    const elems = document.querySelectorAll('.workout');
+    elems.forEach(elem => elem.remove());
+
+    const date = datePicker.value;
+    if (!date) return;
+    this.#currentDate = new Date(date).toISOString().split('T')[0];
+
+    const newArr = this.#workouts.filter(workout => {
+      return workout.date.toISOString().split('T')[0] === this.#currentDate;
+    });
+
+    newArr.forEach(work => {
+      this._renderWorkout(work);
+      this._renderWorkoutMarker(work);
+    });
   }
 
   _getPosition() {
@@ -128,9 +157,9 @@ class App {
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.#map);
 
-    const currDate = new Date(datePicker.value).toISOString().split('T')[0];
     this.#map.on('click', this._showForm.bind(this));
 
+    const currDate = new Date(datePicker.value).toISOString().split('T')[0];
     const newArr = this.#workouts.filter(workout => {
       return workout.date.toISOString().split('T')[0] === currDate;
     });
@@ -138,6 +167,8 @@ class App {
     newArr.forEach(work => {
       this._renderWorkoutMarker(work);
     });
+
+    datePicker.disabled = false;
     // this.#workouts.forEach(work => {
     //   this._renderWorkoutMarker(work);
     // });
