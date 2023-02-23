@@ -104,6 +104,7 @@ class App {
     datePicker.disabled = true;
 
     datePicker.value = new Date().toISOString().split('T')[0];
+    this._clearForm();
   }
 
   _pickerChangeDate() {
@@ -251,6 +252,18 @@ class App {
     this._setLocalStorage();
   }
 
+  _clearForm() {
+    inputType.value = 'running';
+    inputDistance.value = '';
+    inputCadence.value = '';
+    inputDuration.value = '';
+    inputElevation.value = '';
+
+    inputCadence.closest('.form__row').classList.remove('form__row--hidden');
+
+    inputElevation.closest('.form__row').classList.add('form__row--hidden');
+  }
+
   _renderWorkoutMarker(workout) {
     const myMarker = L.marker(workout.coords)
       .addTo(this.#map)
@@ -367,6 +380,7 @@ class App {
     workout.click();
   }
 
+  //incomplete!!
   _editWorkout(e) {
     const workout = this.#workouts.find(
       work => work.id === e.target.dataset.id
